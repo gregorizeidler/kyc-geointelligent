@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  kyc-geointeligente:
+    build: .
+    container_name: kyc-geointeligente
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for caching (future enhancement)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: kyc-redis
+  #   ports:
+  #     - "6379:6379"
+  #   command: redis-server --appendonly yes
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+
+  # Optional: PostgreSQL for storing analysis results (future enhancement)  
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: kyc-postgres
+  #   environment:
+  #     POSTGRES_DB: kyc_geointeligente
+  #     POSTGRES_USER: kyc_user
+  #     POSTGRES_PASSWORD: kyc_password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+# volumes:
+#   redis_data:
+#   postgres_data:
